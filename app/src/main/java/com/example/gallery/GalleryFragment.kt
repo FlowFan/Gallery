@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import com.example.gallery.databinding.FragmentGalleryBinding
@@ -36,6 +38,18 @@ class GalleryFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.swipeIndicator -> adapter.refresh()
+                }
+                return true
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         return binding.root
     }
 
@@ -43,7 +57,6 @@ class GalleryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val galleryViewModel by activityViewModels<GalleryViewModel>()
-        setHasOptionsMenu(true)
         adapter.apply {
             binding.recyclerView.adapter = this.withLoadStateFooter(FooterAdapter { retry() })
             galleryViewModel.pagingData.observe(viewLifecycleOwner) {
@@ -57,9 +70,11 @@ class GalleryFragment : Fragment() {
                             binding.swipeLayoutGallery.isRefreshing = false
                         }
                     }
+
                     is LoadState.Loading -> {
                         binding.swipeLayoutGallery.isRefreshing = true
                     }
+
                     is LoadState.Error -> {
                         viewLifecycleOwner.lifecycleScope.launch {
                             delay(3000)
@@ -78,17 +93,5 @@ class GalleryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {  //重写方法，加载menu
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {   //重写方法，设置menu功能
-        when (item.itemId) {
-            R.id.swipeIndicator -> adapter.refresh()
-        }
-        return super.onOptionsItemSelected(item)
     }
 }
