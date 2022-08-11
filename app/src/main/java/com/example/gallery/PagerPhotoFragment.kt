@@ -2,6 +2,7 @@ package com.example.gallery
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
@@ -26,6 +27,7 @@ import com.example.gallery.databinding.FragmentPagerPhotoBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PagerPhotoFragment : Fragment() {
     private var _binding: FragmentPagerPhotoBinding? = null
@@ -68,7 +70,7 @@ class PagerPhotoFragment : Fragment() {
                     Log.d("Hello", "${it.key} = ${it.value}")
                 }
                 if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true) {
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) { savePhoto() }   //协程处理
+                    viewLifecycleOwner.lifecycleScope.launch { savePhoto() }   //协程处理
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -83,7 +85,7 @@ class PagerPhotoFragment : Fragment() {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT > 28    //已获取权限
             ) {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) { savePhoto() }    //协程处理
+                viewLifecycleOwner.lifecycleScope.launch { savePhoto() }    //协程处理
             } else {    //未获取权限
                 requestPermissionLauncher.launch(   //请求权限
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -97,7 +99,7 @@ class PagerPhotoFragment : Fragment() {
         _binding = null
     }
 
-    private fun savePhoto() {
+    private suspend fun savePhoto() = withContext(Dispatchers.IO) {
         val holder =
             (binding.viewPager2[0] as RecyclerView).findViewHolderForAdapterPosition(binding.viewPager2.currentItem) as PagerPhotoViewHolder    //大图的Holder
         val bitmap = holder.viewBinding.imageView.drawable.toBitmap()  //转换为位图
@@ -105,30 +107,21 @@ class PagerPhotoFragment : Fragment() {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             ContentValues()
         ) ?: kotlin.run {
-            MainScope().launch {
-                Toast.makeText(requireContext(), getString(R.string.save_fail), Toast.LENGTH_SHORT)
-                    .show()
-            }
-            return
+            showToast(requireContext(), getString(R.string.save_fail))
+            return@withContext
         }
-        requireContext().contentResolver.openOutputStream(saveUri).use {
-            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) {  //保存图片
-                MainScope().launch {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.save_success),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } else {
-                MainScope().launch {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.save_fail),
-                        Toast.LENGTH_SHORT
-                    ).show()
+        runCatching {
+            requireContext().contentResolver.openOutputStream(saveUri).use {
+                if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) {  //保存图片
+                    showToast(requireContext(), getString(R.string.save_success))
+                } else {
+                    showToast(requireContext(), getString(R.string.save_fail))
                 }
             }
         }
+    }
+
+    private fun showToast(context: Context, string: String) = MainScope().launch {
+        Toast.makeText(context, string, Toast.LENGTH_SHORT).show()
     }
 }
