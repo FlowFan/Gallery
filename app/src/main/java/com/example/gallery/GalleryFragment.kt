@@ -58,7 +58,7 @@ class GalleryFragment : Fragment() {
 
         val galleryViewModel by activityViewModels<GalleryViewModel>()
         adapter.apply {
-            binding.recyclerView.adapter = this.withLoadStateFooter(FooterAdapter { retry() })
+            binding.recyclerView.adapter = withLoadStateFooter(FooterAdapter { retry() })
             galleryViewModel.pagingData.observe(viewLifecycleOwner) {
                 submitData(viewLifecycleOwner.lifecycle, it)
             }

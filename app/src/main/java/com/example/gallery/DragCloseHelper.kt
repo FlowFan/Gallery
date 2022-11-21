@@ -176,10 +176,6 @@ class DragCloseHelper(
                         //无效触摸区域，则需要拦截
                         return true
                     }
-                    if (mLastRawY == -1f) {
-                        //解决触摸底部，部分有虚拟导航栏的手机会出现先move后down的问题，因此up和cancel的时候需要重置为-1
-                        return true
-                    }
                     if (lastPointerId != event.getPointerId(0)) {
                         //手指不一致，恢复原状
                         if (isSwipingToClose) {
