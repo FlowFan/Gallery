@@ -25,7 +25,6 @@ class ImageGesture(
 ) : AllGesture,
     View.OnTouchListener,
     View.OnLayoutChangeListener {
-
     private val mDrawMatrix = Matrix()
     private val mBaseMatrix = Matrix()
     private val mDecoMatrix = Matrix()
@@ -57,9 +56,7 @@ class ImageGesture(
             val currentScale = mDecoMatrix.getScale()
             if (scaleFactor > 1f && currentScale < MAX_SCALE) {
                 if (currentScale * scaleFactor > MAX_SCALE) {
-                    mDecoMatrix.postScale(
-                        MAX_SCALE / currentScale, MAX_SCALE / currentScale, focusX, focusY
-                    )
+                    mDecoMatrix.postScale(MAX_SCALE / currentScale, MAX_SCALE / currentScale, focusX, focusY)
                 } else {
                     mDecoMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY)
                 }
@@ -69,9 +66,7 @@ class ImageGesture(
 
             if (scaleFactor < 1f && currentScale > 1f) {
                 if (currentScale * scaleFactor < 1f) {
-                    mDecoMatrix.postScale(
-                        1f / currentScale, 1f / currentScale, focusX, focusY
-                    )
+                    mDecoMatrix.postScale(1f / currentScale, 1f / currentScale, focusX, focusY)
                 } else {
                     mDecoMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY)
                 }
@@ -82,9 +77,7 @@ class ImageGesture(
         }
     }
 
-    override fun onScroll(
-        e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float
-    ): Boolean {
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
         var handled = false
         val viewWidth = mImageView.width
         val viewHeight = mImageView.height
@@ -93,16 +86,16 @@ class ImageGesture(
         if (distanceX > 0) {
             if (mDisplayRect.right > viewWidth) {
                 handled = true
-            } else if (abs(e2.x - e1.x) -
-                abs(e2.y - e1.y) > 64
+            } else if (abs(e2.x - (e1?.x ?: 0f)) -
+                abs(e2.y - (e1?.y ?: 0f)) > 64
             ) {
                 mImageView.parent?.requestDisallowInterceptTouchEvent(false)
             }
         } else {
             if (mDisplayRect.left < 0f) {
                 handled = true
-            } else if (abs(e2.x - e1.x) -
-                abs(e2.y - e1.y) > 64
+            } else if (abs(e2.x - (e1?.x ?: 0f)) -
+                abs(e2.y - (e1?.y ?: 0f)) > 64
             ) {
                 mImageView.parent?.requestDisallowInterceptTouchEvent(false)
             }
@@ -111,16 +104,16 @@ class ImageGesture(
         if (distanceY > 0) {
             if (mDisplayRect.bottom > viewHeight) {
                 handled = true
-            } else if (abs(e2.y - e1.y) -
-                abs(e2.x - e1.x) > 64
+            } else if (abs(e2.y - (e1?.y ?: 0f)) -
+                abs(e2.x - (e1?.x ?: 0f)) > 64
             ) {
                 mImageView.parent?.requestDisallowInterceptTouchEvent(false)
             }
         } else {
             if (mDisplayRect.top < 0f) {
                 handled = true
-            } else if (abs(e2.y - e1.y) -
-                abs(e2.x - e1.x) > 64
+            } else if (abs(e2.y - (e1?.y ?: 0f)) -
+                abs(e2.x - (e1?.x ?: 0f)) > 64
             ) {
                 mImageView.parent?.requestDisallowInterceptTouchEvent(false)
             }
@@ -133,9 +126,7 @@ class ImageGesture(
         return handled
     }
 
-    override fun onFling(
-        e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float
-    ): Boolean {
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         //velocityX < 0 手指向左滑动
         //velocityY > 0 手指向右滑动
         //velocityY > 0 手指向下滑动
@@ -170,6 +161,7 @@ class ImageGesture(
                     mImageView.clearAnimation()
                     v?.parent?.requestDisallowInterceptTouchEvent(true)
                 }
+
                 MotionEvent.ACTION_UP -> v?.parent?.requestDisallowInterceptTouchEvent(false)
             }
         }
@@ -189,8 +181,15 @@ class ImageGesture(
 
     /** View.OnLayoutChangeListener ***************************************************************/
     override fun onLayoutChange(
-        v: View?, left: Int, top: Int, right: Int, bottom: Int,
-        oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
+        v: View?,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        oldLeft: Int,
+        oldTop: Int,
+        oldRight: Int,
+        oldBottom: Int
     ) {
         initBase()
     }
@@ -346,8 +345,7 @@ class ImageGesture(
             finalMatrix.getDisplayRect()
             val viewWidth = mImageView.width
             val viewHeight = mImageView.height
-            val (startX: Int, startY: Int) =
-                -mDisplayRect.left.roundToInt() to -mDisplayRect.top.roundToInt()
+            val (startX: Int, startY: Int) = -mDisplayRect.left.roundToInt() to -mDisplayRect.top.roundToInt()
             mCurrentX = startX
             mCurrentY = startY
             /*
@@ -358,9 +356,8 @@ class ImageGesture(
              * pixels, the maximum scroll offset should be 800 pixels.
              */
             val (minX: Int, minY: Int) = 0 to 0
-            val (maxX: Int, maxY: Int) =
-                (mDisplayRect.width() - viewWidth).coerceAtLeast(0f).roundToInt() to
-                        (mDisplayRect.height() - viewHeight).coerceAtLeast(0f).roundToInt()
+            val (maxX: Int, maxY: Int) = (mDisplayRect.width() - viewWidth).coerceAtLeast(0f).roundToInt() to
+                    (mDisplayRect.height() - viewHeight).coerceAtLeast(0f).roundToInt()
             if (maxX != 0 || maxY != 0) {
                 mScroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY)
             }

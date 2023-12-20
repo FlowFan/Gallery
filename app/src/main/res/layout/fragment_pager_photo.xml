@@ -38,6 +38,5 @@
         android:src="@drawable/save_button_image"
         app:layout_constraintBottom_toBottomOf="@+id/photoTag"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/photoTag"
-        tools:ignore="TouchTargetSizeCheck" />
+        app:layout_constraintTop_toTopOf="@+id/photoTag" />
 </androidx.constraintlayout.widget.ConstraintLayout>

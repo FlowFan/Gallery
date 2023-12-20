@@ -64,21 +64,20 @@ class PagerPhotoFragment : Fragment() {
                 }
             })
         }
-        val requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->    //动态申请权限
-                permissions.entries.forEach {
-                    Log.d("Hello", "${it.key} = ${it.value}")
-                }
-                if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true) {
-                    viewLifecycleOwner.lifecycleScope.launch { savePhoto() }   //协程处理
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.save_fail),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->    //动态申请权限
+            permissions.entries.forEach {
+                Log.d("Hello", "${it.key} = ${it.value}")
             }
+            if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true) {
+                viewLifecycleOwner.lifecycleScope.launch { savePhoto() }   //协程处理
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.save_fail),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
         binding.saveButton.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -111,7 +110,7 @@ class PagerPhotoFragment : Fragment() {
             return@withContext
         }
         runCatching {
-            requireContext().contentResolver.openOutputStream(saveUri).use {
+            requireContext().contentResolver.openOutputStream(saveUri)?.use {
                 if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) {  //保存图片
                     showToast(requireContext(), getString(R.string.save_success))
                 } else {

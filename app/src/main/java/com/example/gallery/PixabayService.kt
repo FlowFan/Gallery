@@ -6,7 +6,7 @@ import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface PixabayService {
+fun interface PixabayService {
     @GET("?key=21629751-645aaa88c718127fa1b066aba&per_page=50")
     suspend fun searchPhoto(@Query("q") query: String, @Query("page") page: Int): Pixabay
 

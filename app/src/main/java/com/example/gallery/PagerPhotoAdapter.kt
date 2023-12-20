@@ -9,34 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.gallery.databinding.PagerPhotoViewBinding
 
-class PagerPhotoAdapter(private val activity: AppCompatActivity) :
-    PagingDataAdapter<PhotoItem, PagerPhotoViewHolder>(
-        object : DiffUtil.ItemCallback<PhotoItem>() {
-            override fun areItemsTheSame(oldItem: PhotoItem, newItem: PhotoItem): Boolean { //实现成员
-                return oldItem.photoId == newItem.photoId   //判断Item是否相同
-            }
+class PagerPhotoAdapter(private val activity: AppCompatActivity) : PagingDataAdapter<PhotoItem, PagerPhotoViewHolder>(
+    object : DiffUtil.ItemCallback<PhotoItem>() {
+        override fun areItemsTheSame(oldItem: PhotoItem, newItem: PhotoItem): Boolean { //实现成员
+            return oldItem.photoId == newItem.photoId   //判断Item是否相同
+        }
 
-            override fun areContentsTheSame(
-                oldItem: PhotoItem,
-                newItem: PhotoItem
-            ): Boolean {  //实现成员
-                return oldItem == newItem   //判断内容是否相同
-            }
-        }) {
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): PagerPhotoViewHolder {   //实现成员，加载View
-        return PagerPhotoViewHolder(
-            PagerPhotoViewBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
+        override fun areContentsTheSame(oldItem: PhotoItem, newItem: PhotoItem): Boolean {  //实现成员
+            return oldItem == newItem   //判断内容是否相同
+        }
     }
-
-    override fun onBindViewHolder(holder: PagerPhotoViewHolder, position: Int) {    //实现成员，加载图片
+) {
+    override fun onBindViewHolder(holder: PagerPhotoViewHolder, position: Int) {
         holder.viewBinding.apply {
             shimmerLayout.apply {
                 setShimmerColor(0x55FFFFFF)
@@ -55,7 +39,16 @@ class PagerPhotoAdapter(private val activity: AppCompatActivity) :
             )
         }
     }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerPhotoViewHolder {
+        return PagerPhotoViewHolder(
+            PagerPhotoViewBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+    }
 }
 
-class PagerPhotoViewHolder(val viewBinding: PagerPhotoViewBinding) :
-    RecyclerView.ViewHolder(viewBinding.root)
+class PagerPhotoViewHolder(val viewBinding: PagerPhotoViewBinding) : RecyclerView.ViewHolder(viewBinding.root)

@@ -3,8 +3,7 @@ package com.example.gallery
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
-class PixabayPagingSource(private val pixabayService: PixabayService) :
-    PagingSource<Int, PhotoItem>() {
+class PixabayPagingSource(private val pixabayService: PixabayService) : PagingSource<Int, PhotoItem>() {
     private val queryKey = arrayOf(
         "cat",
         "dog",

@@ -1,8 +1,8 @@
 package com.example.gallery
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.paging.LoadState
@@ -17,11 +17,12 @@ import com.example.gallery.databinding.GalleryFooterBinding
 
 class GalleryAdapter : PagingDataAdapter<PhotoItem, PixabayViewHolder>(
     object : DiffUtil.ItemCallback<PhotoItem>() {
-        override fun areItemsTheSame(oldItem: PhotoItem, newItem: PhotoItem) =
+        override fun areItemsTheSame(oldItem: PhotoItem, newItem: PhotoItem): Boolean =
             oldItem.photoId == newItem.photoId
 
-        override fun areContentsTheSame(oldItem: PhotoItem, newItem: PhotoItem) = oldItem == newItem
-    }) {
+        override fun areContentsTheSame(oldItem: PhotoItem, newItem: PhotoItem): Boolean = oldItem == newItem
+    }
+) {
     override fun onBindViewHolder(holder: PixabayViewHolder, position: Int) {
         val photoItem = getItem(position)
         if (photoItem != null) {
@@ -54,18 +55,16 @@ class GalleryAdapter : PagingDataAdapter<PhotoItem, PixabayViewHolder>(
             )
         )
         holder.itemView.setOnClickListener {
-            Bundle().apply {
-                putInt("PHOTO_POSITION", holder.absoluteAdapterPosition)    //传递当前图片位置
-                it.findNavController()
-                    .navigate(R.id.action_galleryFragment_to_pagerPhotoFragment, this)
-            }
+            it.findNavController().navigate(
+                R.id.action_galleryFragment_to_pagerPhotoFragment,
+                bundleOf("PHOTO_POSITION" to holder.absoluteAdapterPosition)
+            )
         }
         return holder
     }
 }
 
-class PixabayViewHolder(val viewBinding: GalleryCellBinding) :
-    RecyclerView.ViewHolder(viewBinding.root)
+class PixabayViewHolder(val viewBinding: GalleryCellBinding) : RecyclerView.ViewHolder(viewBinding.root)
 
 class FooterAdapter(private val retry: () -> Unit) : LoadStateAdapter<FooterViewHolder>() {
     override fun onBindViewHolder(holder: FooterViewHolder, loadState: LoadState) {
@@ -98,5 +97,4 @@ class FooterAdapter(private val retry: () -> Unit) : LoadStateAdapter<FooterView
     }
 }
 
-class FooterViewHolder(val viewBinding: GalleryFooterBinding) :
-    RecyclerView.ViewHolder(viewBinding.root)
+class FooterViewHolder(val viewBinding: GalleryFooterBinding) : RecyclerView.ViewHolder(viewBinding.root)
