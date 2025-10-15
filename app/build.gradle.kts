@@ -1,18 +1,20 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    kotlin("plugin.parcelize")
+    alias(libs.plugins.jetbrainsKotlinPluginParcelize)
 }
 
 android {
     namespace = "com.example.gallery"
-    compileSdk = 34
-    buildToolsVersion = "34.0.0"
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.example.gallery"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -29,11 +31,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     buildFeatures {
         viewBinding = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
@@ -51,6 +56,7 @@ dependencies {
     implementation(libs.shimmerlayout)
     implementation(libs.gson)
     implementation(libs.coil)
+    implementation(libs.coil.network)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.androidx.window)

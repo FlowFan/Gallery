@@ -15,6 +15,7 @@ data class Pixabay(
 data class PhotoItem(
     @SerializedName("id") val photoId: Int, //ID
     @SerializedName("webformatURL") val previewURL: String, //预览图
+    @SerializedName("webformatWidth") val photoWidth: Int,    //预览图宽度
     @SerializedName("webformatHeight") val photoHeight: Int,    //预览图高度
     @SerializedName("largeImageURL") val fullURL: String,   //大图
     @SerializedName("favorites") val photoFavorites: Int,    //喜爱数

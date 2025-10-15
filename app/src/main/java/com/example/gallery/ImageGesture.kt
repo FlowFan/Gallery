@@ -12,7 +12,6 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.OverScroller
-import androidx.core.view.ViewCompat
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -337,7 +336,7 @@ class ImageGesture(
                 updateImageMatrix()
                 mCurrentX = newX
                 mCurrentY = newY
-                ViewCompat.postOnAnimation(mImageView, this)
+                mImageView.postOnAnimation(this)
             }
         }
 

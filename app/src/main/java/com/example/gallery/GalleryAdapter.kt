@@ -2,6 +2,7 @@ package com.example.gallery
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
@@ -11,7 +12,8 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import coil.load
+import coil3.load
+import coil3.request.placeholder
 import com.example.gallery.databinding.GalleryCellBinding
 import com.example.gallery.databinding.GalleryFooterBinding
 
@@ -35,7 +37,8 @@ class GalleryAdapter : PagingDataAdapter<PhotoItem, PixabayViewHolder>(
                 textViewUser.text = photoItem.photoUser
                 textViewLikes.text = photoItem.photoLikes.toString()
                 textViewFavorites.text = photoItem.photoFavorites.toString()
-                imageView.layoutParams.height = photoItem.photoHeight
+                (imageView.layoutParams as? ConstraintLayout.LayoutParams)?.dimensionRatio =
+                    "${photoItem.photoWidth}:${photoItem.photoHeight}"
                 imageView.load(photoItem.previewURL) {
                     placeholder(R.drawable.photo_placeholder)
                     listener { _, _ ->

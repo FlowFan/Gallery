@@ -6,7 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import coil3.load
+import coil3.request.placeholder
 import com.example.gallery.databinding.PagerPhotoViewBinding
 
 class PagerPhotoAdapter(private val activity: AppCompatActivity) : PagingDataAdapter<PhotoItem, PagerPhotoViewHolder>(
